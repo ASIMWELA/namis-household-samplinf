@@ -100,7 +100,7 @@ class CommonFunctions {
     return idConcatenated;
   }
 
-  prepareTeiCategory(tei, data) {
+  prepareTeiCategory(tei, programDetails) {
     let crops = [];
     let prepData = [];
     let livestocks = [];
@@ -116,140 +116,80 @@ class CommonFunctions {
       "eWKyudJoI8p",
       "JGTnKUDoCTi",
     ];
-    let restructuredDataElements = [];
-    tei.forEach((te) => {
-      te.households.forEach((hs) => {});
-    });
-    data.forEach((dt) => {
-      dt.enrollments.forEach((enl) => {
-        enl.events.forEach((evt) => {
-          evt.dataValues.forEach((elem) => {
-            tei.forEach((te) => {
-              if (
-                focusDataElements[0] === elem.dataElement &&
-                eval(elem.value)
-              ) {
-                if (!te.hasOwnProperty("otherAttributes")) {
-                  te.otherAttributes = dt.attributes;
-                  //   ...(te.otherAttributes || []),
-                  //   ...dt.attributes,
-                  // ];
-                  crops.push(te);
-                }
-              }
-              // te.households.forEach((hs) => {
 
-              // });
+    let restructuredTrackedEntities = [];
+    tei.forEach((trakedEntity) => {
+      let trakedEntityHouseholdIds = [];
+      trakedEntity.households.forEach((houseHold) => {
+        trakedEntityHouseholdIds.push(houseHold.id);
+      });
+      restructuredTrackedEntities.push({
+        ...trakedEntity,
+        householdIds: trakedEntityHouseholdIds,
+      });
+    });
+
+    restructuredTrackedEntities.forEach((entity) => {
+      entity.households.forEach((household) => {
+        programDetails.forEach((programDetail) => {
+          if (
+            entity.householdIds.includes(programDetail.trackedEntityInstance)
+          ) {
+            programDetail.enrollments.forEach((enrollment) => {
+              enrollment.events.forEach((event) => {
+                event.dataValues.forEach((dataValue) => {
+                  if (
+                    focusDataElements[0] === dataValue.dataElement &&
+                    eval(dataValue.value)
+                  ) {
+                    entity.otherAttributes = programDetail.attributes;
+                    crops.push(entity);
+                  }
+                  if (
+                    focusDataElements[1] === dataValue.dataElement &&
+                    eval(dataValue.value)
+                  ) {
+                    household.otherAttributes = programDetail.attributes;
+                    livestocks.push(entity);
+                  }
+                  if (
+                    focusDataElements[2] === dataValue.dataElement &&
+                    eval(dataValue.value)
+                  ) {
+                    entity.otherAttributes = programDetail.attributes;
+                    fisheries.push(entity);
+                  }
+                  //general horticulture crops
+                  if (
+                    focusDataElements[3] === dataValue.dataElement &&
+                    eval(dataValue.value)
+                  ) {
+                    entity.otherAttributes = programDetail.attributes;
+                    horticultureHH.push(entity);
+                  }
+                  //pineapple
+                  if (
+                    focusDataElements[4] === dataValue.dataElement &&
+                    eval(dataValue.value)
+                  ) {
+                    entity.otherAttributes = programDetail.attributes;
+                    pineapple.push(entity);
+                  }
+                  //banana
+                  if (
+                    focusDataElements[5] === dataValue.dataElement &&
+                    eval(dataValue.value)
+                  ) {
+                    entity.otherAttributes = programDetail.attributes;
+                    banana.push(entity);
+                  }
+                });
+              });
             });
-          });
+          }
         });
       });
     });
-    // console.log(crops);
-    let cro = [];
-    // restructuredDataElements.forEach((elem) => {
-    //   for (let i = 0; i < tei.length; i++) {
-    //     for (let y = 0; y < tei[i].households.length; y++) {
-    //       if (focusDataElements[0] === elem.dataElement && eval(elem.value)) {
-    //         let v = { ...tei[i], otherAttributes: elem.attributes };
-    //         cro.push(v);
-    //       }
-    //     }
-    //   }
-    // });
-
-    // tei.forEach((te) => {
-    //   te.households.forEach((house) => {
-    //     restructuredDataElements.forEach((elem) => {
-    //       if (focusDataElements[0] === elem.dataElement && eval(elem.value)) {
-    //         let v = { ...te, otherAttributes: elem.attributes };
-    //         cro.push(v);
-    //       }
-    //     });
-    //   });
-    // });
-    // console.log(cro);
-    // tei.forEach((te) => {
-    //   te.households.forEach((hs) => {
-    //     data.enrollments.forEach((el) => {
-    //       el.events.forEach((evt) => {
-    //         evt.dataValues.forEach((dv) => {
-    //           if (focusDataElements[0] === dv.dataElement && eval(dv.value)) {
-    //             te.otherAttributes = data[0].attributes;
-    //             console.log(te);
-    //             crops.push(te);
-    //           }
-    //         });
-    //       });
-    //     });
-    //   });
-    // });
-
-    // console.log(tei, data);
-    // const dataElems = data.map((pulled) => {
-    //   return pulled.enrollments.map((enrl) => {
-    //     return enrl.events.map((evt) => {
-    //       return evt.dataValues.map((dvalue) => dvalue);
-    //     });
-    //   });
-    // });
-
-    let preparedElems = [];
-    let cropsAttr = [];
-    // tei.forEach((te) => {
-    //   te.households.forEach((hs) => {
-    //     data.forEach((pulledD) => {
-    //       pulledD.enrollments.forEach((enrl) => {
-    //         enrl.events.forEach((evt) => {
-    //           evt.dataValues.forEach((el) => {
-    //             if (focusDataElements[0] === el.dataElement && eval(el.value)) {
-    //               cropsAttr.push({
-    //                 ...el,
-    //                 otherAttributes: pulledD.attributes,
-    //                 household: hs.id,
-    //               });
-    //               crops.push(te);
-    //             }
-    //           });
-    //         });
-    //       });
-    //     });
-    //   });
-    // });
-    let dinstictElems = [...new Set(cropsAttr.map((atr) => atr))];
-    // preparedElems.forEach((ele) => {
-    //   tei.forEach((te) => {
-    //     te.households.forEach((hs) => {
-    //       if (ele.dataElement === focusDataElements[0] && eval(ele.value)) {
-    //         crops.push(te);
-    //       }
-    //     });
-    //   });
-    // });
-
-    // let pulledElements = cropPrs.concat(liveStoc);
-
-    let extractedElemes = [];
-
-    for (let u = 0; u < tei.length; u++) {
-      for (let h = 0; h < tei[u].household; h++) {}
-    }
-
-    // console.log(liveStoc);
-    // pulledElements.forEach((elem) => {
-    //   tei.forEach((te, tIndex) => {
-    //     te.households.forEach((hs) => {
-    //       if (elem.dataElement === focusDataElements[0]) {
-    //         crops.push(te);
-    //       }
-
-    //       if (elem.dataElement === focusDataElements[1]) {
-    //         te.otherAttributes = [...elem.otherAttributes];
-    //         livestocks.push(te);
-    //       }
-    //     });
-    //   });
-    // });
 
     let dinstinctCrops = [...new Set(crops.map((crop) => crop))];
     let dinstinctlivestockHH = [
@@ -258,15 +198,20 @@ class CommonFunctions {
     let dinstinctHorticultureHH = [
       ...new Set(horticultureHH.map((horticulture) => horticulture)),
     ];
-    // console.log(dinstinctCrops, dinstictElems);
 
+    let dinstinctBananaHH = [...new Set(banana.map((banana) => banana))];
+    let dinstinctPineAppleHH = [
+      ...new Set(pineapple.map((pineapple) => pineapple)),
+    ];
     prepData.push({
       allHorticulture: dinstinctHorticultureHH,
-      banana: banana,
-      pineapple: pineapple,
+      banana: dinstinctBananaHH,
+      pineapple: dinstinctPineAppleHH,
       crops: dinstinctCrops,
       livestockHouseholds: dinstinctlivestockHH,
     });
+
+    console.log(prepData);
   }
   // async prepareTeiCategory(tei) {
   //   let prepData = [];
@@ -286,7 +231,7 @@ class CommonFunctions {
   //   ];
 
   //   for (let i = 0; i < tei.length; i++) {
-  //     if (tei[i].households.length == 0) {
+  //     if (entity.households.length == 0) {
   //     } else {
   //       for (let w = 0; w < tei[i].households.length; w++) {
   //         let teiMeta = Api.getTrackedEntityProgramData(
@@ -312,7 +257,7 @@ class CommonFunctions {
   //                 focusDataElements[0] === dataValue.dataElement &&
   //                 eval(dataValue.value)
   //               ) {
-  //                 tei[i].otherAttributes = data.attributes;
+  //               entity.otherAttributes = data.attributes;
   //                 crops.push(tei[i]);
   //               }
   //               if (

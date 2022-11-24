@@ -29,6 +29,7 @@ export const getTrackedEntityProgramData = {
       fields: [
         "attributes[attribute,displayName,value,valueType],enrollments[enrollment,events[event,dataValues[dataElement,value]]]",
         "orgUnit",
+        "trackedEntityInstance",
       ],
     }),
 

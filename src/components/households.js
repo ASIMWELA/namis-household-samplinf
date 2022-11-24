@@ -13,6 +13,7 @@ const HouseHoldListing = () => {
   const [ouIds, setOuIds] = useState();
   const [orgUnits, setOrgUnits] = useState();
   const [teiIds, setTeiIds] = useState();
+  const [arrayedIds, setArrayedIds] = useState();
   const [allTeis, setAllTeis] = useState([]);
   const [hsId, setHis] = useState();
   const { loading: ouLoading, data: ouData } = useDataQuery(getUserOu, {
@@ -39,7 +40,6 @@ const HouseHoldListing = () => {
 
         const teiIds = CommonFunctions.prepareTeiIds(teis);
         setTeiIds(teiIds);
-
         setAllTeis(teis);
       },
       onError: (err) => {
@@ -50,7 +50,7 @@ const HouseHoldListing = () => {
 
   const { loading: teiProgramDataLoading, refetch: refetchTeiProgramData } =
     useDataQuery(getTrackedEntityProgramData, {
-      variables: { teiIds: "" },
+      variables: { teiIds: teiIds },
       onComplete: (data) => {
         const pulledD = data?.teProgramData?.trackedEntityInstances;
 
@@ -62,16 +62,22 @@ const HouseHoldListing = () => {
     if (ouIds) {
       refetchTe({ ouIds: ouIds });
     }
-    if (teiIds) {
-      let ids = teiIds.split(";").slice(0, -1);
-
-      ids.forEach((id) => {
-        refetchTeiProgramData({ teiIds: id }).then((res) => {
-          console.log(res);
-        });
-      });
-    }
   }, [ouIds]);
+
+  useEffect(() => {
+    if (teiIds) {
+      const ids = teiIds.split(";").slice(0, -1);
+      setArrayedIds(ids);
+
+      //  refetchTeiProgramData({ teiIds: teiIds });
+    }
+  }, [teiIds]);
+
+  useEffect(() => {
+    if (teiIds) {
+      refetchTeiProgramData({ teiIds });
+    }
+  }, [teiIds]);
 
   return <div>Hello</div>;
 };
